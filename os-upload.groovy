@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 def os_release=release="https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-03-25/2021-03-04-raspios-buster-armhf-lite.zip"
-def reg_pattern=/^[0-9][0-9][0-9][0-9]-0-9][0-9].*zip$/
+
 pipeline {
     agent any 
     stages {
@@ -12,6 +12,44 @@ pipeline {
                 mv \$searched_file raspberry.zip
                 unzip raspberry.zip
                 """
+            }
+        }
+
+        stage('Prepare OS Image') { 
+            steps {
+                sh """
+                unzip raspberry.zip
+                qemu-img convert -f raw raspberry.img -O vmdk raspberry.vmdk
+                """
+            }
+        }
+
+        stage('Copy OS Image To VMWare ESXi Host') { 
+            steps {
+                // sh """
+                // unzip raspberry.zip
+                // qemu-img convert -f raw raspberry.img -O vmdk raspberry.vmdk
+                // """
+            }
+        }
+
+        stage('Provision OS Image On VMWare ESXi Host') { 
+            steps {
+                //vmkfstools -i 2020-05-27-raspios-buster-arm64.vmdk -d thin raspios-buster-arm64.vmdk
+                // sh """
+                // unzip raspberry.zip
+                // qemu-img convert -f raw raspberry.img -O vmdk raspberry.vmdk
+                // """
+            }
+        }
+
+        stage('Place OS Image On VMWare ISCI Storage') { 
+            steps {
+                //vmkfstools -i 2020-05-27-raspios-buster-arm64.vmdk -d thin raspios-buster-arm64.vmdk
+                // sh """
+                // unzip raspberry.zip
+                // qemu-img convert -f raw raspberry.img -O vmdk raspberry.vmdk
+                // """
             }
         }
     }
